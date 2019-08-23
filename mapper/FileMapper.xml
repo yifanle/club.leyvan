@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="club.leyvan.mapper.FileMapper">
+	<insert id="saveFileData" parameterType="fileData" useGeneratedKeys="true" keyProperty="fid">
+		<selectKey keyProperty="fid" resultType="int" order="AFTER">
+			SELECT LAST_INSERT_ID();
+		</selectKey>
+		INSERT 
+		INTO 
+		`file` 
+		(filename,`date`,`num`,`path`,`type`,`fuid`,`compnum`) 
+		VALUE (#{filename},#{date},#{num},#{path},#{type},#{fuid},#{compnum});
+	</insert>
+	
+	<insert id="saveTitles" parameterType="fileData">
+		insert into `content` (`cfid`,`content`) value
+		<foreach collection="content" item="item" open="(" close=")" separator="),(">
+			#{fid},#{item}
+		</foreach>
+	</insert>
+	
+	<select id="getContentByFid" parameterType="fileData" resultType="String">
+		select `content` from `content` where cfid = #{fid};
+	</select>
+	
+	<select id="getFileDataByFid" parameterType="fileData" resultType="fileData">
+		select * from `file` where `fid` = #{fid};
+	</select>
+	
+	<update id="updateCompnumByFid" parameterType="fileData">
+		update `file` set compnum = #{compnum} where `fid` = #{fid}
+	</update>
+	
+	<insert id="insertVal" parameterType="fileData">
+		insert into `val` (vfid,`row`,`num`) value
+		<foreach collection="content" item="item" open="(" close=")" separator="),(">
+			#{fid},#{item},#{compnum}
+		</foreach>
+	</insert>
+	
+	<select id="findNotCompFilesByUid" parameterType="fileData" resultType="fileData">
+		select * from `file` where fuid = #{fuid} and num != compnum;
+	</select>
+	
+	<select id="findCompFilesByUid" parameterType="fileData" resultType="fileData">
+		select * from `file` where fuid = #{fuid} and num = compnum;
+	</select>
+	
+	<select id="findMissionRowsByNum" parameterType="fileData" resultType="string">
+		select `row` from val where vfid = #{fid} and num = #{compnum};
+	</select>
+	
+	<select id="findMaxCompleteNum" parameterType="fileData" resultType="int">
+		select MAX(num) from val where vfid = #{fid};
+	</select>
+	
+	<delete id="deleteValByFid" parameterType="fileData">
+		delete from `val` where vfid = #{fid};
+	</delete>
+	
+	<delete id="deleteContentByFid" parameterType="fileData">
+		delete from `content` where cfid = #{fid};
+	</delete>
+	
+	<delete id="deleteFileByFid" parameterType="fileData">
+		delete from `file` where fid = #{fid};
+	</delete>
+</mapper>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="club.leyvan.mapper.BenifitsMapper">
+	<select id="findBenifitsByPage" resultType="benifits" parameterType="page">
+		SELECT 
+		b.bid,
+		b.date,
+		b.title,
+		t.describe 
+		FROM 
+		`benifits` b 
+		LEFT JOIN 
+		`type` t 
+		ON 
+		b.type = t.tid 
+		<where>
+			<if test="sc!=null">
+				<if test="sc.bid!=null and sc.bid!=0">
+					and b.type = #{sc.bid}
+				</if>
+				<if test="sc.keyword!=null and sc.keyword!=''">
+					and b.title LIKE #{sc.keyword}
+				</if>
+			</if>
+			
+		</where>
+		LIMIT #{firstIndex},#{pageSize};
+	</select>
+	
+	<select id="getBenifitsCountByConditions" parameterType="searchCondition" resultType="int">
+		select count(*) count from `benifits` b 
+		LEFT JOIN 
+		`type` t 
+		ON 
+		b.type = t.tid 
+		<where>
+			<if test="bid!=null and bid!=0">
+				and b.type =#{bid}
+			</if>
+			
+			<if test="keyword!=null and keyword!=''">
+				and b.title like #{keyword}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getBenifitsCount" resultType="int">
+		SELECT COUNT(*) COUNT FROM benifits;
+	</select>
+	
+	<select id="getLinkById" resultType="benifits" parameterType="benifits">
+		select url from benifits where bid = #{bid};
+	</select>
+	
+	<select id="getAllType" resultType="type">
+		SELECT * FROM TYPE;
+	</select>
+	
+</mapper>

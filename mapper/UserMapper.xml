@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="club.leyvan.mapper.UserMapper">
+	<insert id="regist" parameterType="club.leyvan.pojo.User">
+		INSERT INTO `user` (`phonenum`,`password`,`name`,`count`) VALUE (#{phonenum,jdbcType=VARCHAR},#{password,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},#{count,jdbcType=INTEGER});
+	</insert>
+	
+	<sql id="userSql">
+		`uid`,
+		`phonenum`,
+		`password`,
+		`name`,
+		`count`
+	</sql>
+	
+	<select id="findUserByPhonnum" resultType="club.leyvan.pojo.User" parameterType="club.leyvan.pojo.User">
+		SELECT 
+		 <include refid="userSql"/>
+		 FROM `user` 
+		 WHERE 
+		 phonenum = #{phonenum,jdbcType=VARCHAR};
+	</select>
+	
+	<select id="login" resultType="user" parameterType="user">
+		SELECT	
+		<include refid="userSql"/>
+		 FROM `user` WHERE phonenum = #{phonenum,jdbcType=VARCHAR};
+	</select>
+	
+	<select id="checkUserByUidAndPwd" parameterType="user" resultType="user">
+		select
+		<include refid="userSql"/>
+		From `user` where uid = #{uid} and password = #{password}
+	</select>
+	
+	<update id="updatePassword" parameterType="user">
+		update `user` set password = #{password} where phonenum = #{phonenum};
+	</update>
+</mapper>
